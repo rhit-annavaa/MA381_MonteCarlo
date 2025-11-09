@@ -1,12 +1,15 @@
 import random
 from collections import Counter
 
-TEAM_P = { # we can get the P for each team using Bayes Theorem 
+#how many wins and losses a team starts with, ten calculate expected value of wins
+
+TEAM_P = { # we can get the P for each team using Pythag Expectation
     "ATL": 0.60,
     "LAD": 0.58,
     "NYM": 0.52,
     "CHC": 0.51,
     "SDP": 0.53,
+    # "TOR": random.betavariate(25, 31),
 }
 
 GAMES = 150 #games in a seson
@@ -18,14 +21,14 @@ win_sums = Counter() #same as above, but for wins
 
 #found most of this monte carlo sim online and will work on it 
 for _ in range(TRIALS): #<- use _ to ignore loop var
-    wins = {t: sum(1 for _ in range(GAMES) if random.random() < p)
-            for t, p in TEAM_P.items()}
+    wins = {t: sum(1 for _ in range(GAMES) if random.random() < p) #simulate wins based on probability
+            for t, p in TEAM_P.items()} #dict comprehension to create a dict of team wins
     # random tiebreaker for ties at the top
-    top = max(wins.values())
-    tied = [t for t, w in wins.items() if w == top]
-    first_place[random.choice(tied)] += 1
-    for t, w in wins.items():
-        win_sums[t] += w
+    top = max(wins.values()) #determine the team with max wins
+    tied = [t for t, w in wins.items() if w == top] #list of teams that are tied for first
+    first_place[random.choice(tied)] += 1 #randomly choose one of the tied teams to get first place credit
+    for t, w in wins.items(): #add each teams wins to their total win count
+        win_sums[t] += w #add wins to total
 
 print("=== Chance to finish 1st ===")
 for t in TEAM_P:
