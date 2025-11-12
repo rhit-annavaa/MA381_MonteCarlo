@@ -4,7 +4,16 @@ from collections import Counter
 #how many wins and losses a team starts with, ten calculate expected value of wins
 
 TEAM_P = { # we can get the P for each team using Pythag Expectation
-    "ATL": 0.60,
+    "ARI": 0.503,
+    "OAK": 0.451,
+    "ATL": 0.494,
+    "BAL": 0.431,
+    "BOS": 0.569,
+    "CUB": 0.591,
+    "CWS": 0.438,
+    "CIN": 0.523,
+    "CLE": 0.496,
+    #stuff below here is not yet calulated, as in just random vals
     "LAD": 0.58,
     "NYM": 0.52,
     "CHC": 0.51,
