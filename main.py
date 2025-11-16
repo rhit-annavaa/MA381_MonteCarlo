@@ -47,6 +47,19 @@ for item in TEAM_P.items():      # TEAM_P.items() returns pairs like ("ATL", 0.4
 GAMES = 150 #games in a seson
 TRIALS = 2000  # trial count
 
+#team = "SDP"
+teamWinsAtStart = 35
+startingGames = 50
+startCount = 0
+
+baye_met = {}
+baye_condition_met = {}
+first_place_with_baye = {}
+
+for team in TEAM_P:
+    baye_met[team] = 0.0
+    first_place_with_baye[team] = 0.0
+
 first_place = Counter() #to count first place finishes, it auto-adds a key if the jey doesnt exist yet 
 win_sums = Counter() #same as above, but for wins
 #we use counter here cuz it makes it easy to count things without initializing keys
@@ -79,18 +92,54 @@ for _ in range(TRIALS): #<- use _ to ignore loop var
             # If true, this is a simulated win
                 win_count = win_count + 1
 
+            # Adds to the Baye wins if this team has x amount of wins in the first y games
+            if (game_index == startingGames):
+                if (teamWinsAtStart == win_count):
+                    baye_met[t] += 1
+                    baye_condition_met[t] = True
+                else:
+                    baye_condition_met[t] = False
+                
+
+            
+
     # After finishing all the simulated games, store the win total
         wins[t] = win_count
     # random tiebreaker for ties at the top
     top = max(wins.values()) #determine the team with max wins
     tied = [t for t, w in wins.items() if w == top] #list of teams that are tied for first
-    first_place[random.choice(tied)] += 1 #randomly choose one of the tied teams to get first place credit
+    winningTeam = random.choice(tied) #randomly choose one of the tied teams to get first place credit
+    first_place[winningTeam] += 1 
     for t, w in wins.items(): #add each teams wins to their total win count
         win_sums[t] += w #add wins to total
+    if (baye_condition_met[winningTeam]):
+        first_place_with_baye[winningTeam] += 1 #add a points for the wining team if the baye condition was met
 
-print("=== Chance to finish 1st ===")
+winning_with_conditional_probability = {}
+for t in TEAM_P:
+    if (baye_met[t] != 0):
+        bayeChanceWhenWinning = first_place_with_baye[t] / first_place[t]
+        winning_with_conditional_probability[t] = (first_place[t] * bayeChanceWhenWinning) / (baye_met[t])
+    else:
+        winning_with_conditional_probability[t] = 0.0
+    
+
+
+print("\n=== Chance to finish 1st ===")
 for t in TEAM_P:
     print(f"{t}: {first_place[t]/TRIALS:.2%}")
+
+print("\n=== Conditional: Chance for a team to win " + str(teamWinsAtStart) + " games out of the first " + str(startingGames) + " games ===")
+for t in TEAM_P:
+    print(f"{t}: {baye_met[t]/TRIALS:.2%}")
+
+print("\n=== Chance for conditional to be true when finishing 1st ===")
+for t in TEAM_P:
+    print(f"{t}: {first_place_with_baye[t] / first_place[t]:.2%}")
+
+print("\n=== Chance to finishing 1st with conditional true ===")
+for t in TEAM_P:
+    print(f"{t}: {winning_with_conditional_probability[t]:.2%}")
 
 print("\n=== Mean wins over trials ===")
 for t in TEAM_P:
