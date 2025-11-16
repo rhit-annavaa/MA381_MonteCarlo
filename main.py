@@ -4,22 +4,30 @@ from collections import Counter
 #how many wins and losses a team starts with, ten calculate expected value of wins
 
 TEAM_P = { # we can get the P for each team using Pythag Expectation
-    "ARI": 0.503,
-    "OAK": 0.451,
-    "ATL": 0.494,
-    "BAL": 0.431,
-    "BOS": 0.569,
-    "CUB": 0.591,
-    "CWS": 0.438,
-    "CIN": 0.523,
-    "CLE": 0.496,
-    "WAS": 0.433,
-    #stuff below here is not yet calulated, as in just random vals
-    "LAD": 0.58,
     "NYM": 0.52,
     "CHC": 0.51,
     "SDP": 0.53,
-    # "TOR": random.betavariate(25, 31),
+    "COL": 0.27,
+    "DET": 0.54,
+    "HOU": 0.51,
+    "KAN": 0.51,
+    "LAA": 0.40,
+    "LAD": 0.59,
+    "MIM": 0.45,
+    "MIB": 0.61,
+    "MNT": 0.44,
+    "NYM": 0.53,
+    "NYY": 0.60,
+    "PHP": 0.58,
+    "PTP": 0.45,
+    "SDP": 0.45,
+    "STM": 0.55,
+    "SFG": 0.57,
+    "SLC": 0.46,
+    "TBR": 0.54,
+    "TRG": 0.56,
+    "TBJ": 0.55,
+    "WNA": 0.38
 }
 
 GAMESPLAYED=40
@@ -47,7 +55,7 @@ for item in TEAM_P.items():      # TEAM_P.items() returns pairs like ("ATL", 0.4
 GAMES = 150 #games in a seson
 TRIALS = 3000  # trial count
 
-
+ 
 TEAM_WINS_CONDITIONAL = 20 #Wins for the given conditional
 STARTING_GAMES_CONDITIONAL = 30 # Number of wins when the conditional is checked
 
@@ -121,7 +129,7 @@ for _ in range(TRIALS): #<- use _ to ignore loop var
 
 winning_with_conditional_probability = {} #Dictionary containing the probabilies of a team winning if the conditional property is true
 for t in TEAM_P:
-    if (probability_of_conditional[t] != 0): #Prevents a divide by zero
+    if (probability_of_conditional[t] != 0 and first_place[t] != 0): #Prevents a divide by zero
         bayeChanceWhenWinning = first_place_with_conditional[t] / first_place[t] #Chance the conditional is meet in a winning season
         winning_with_conditional_probability[t] = (first_place[t] * bayeChanceWhenWinning) / (probability_of_conditional[t]) # Bayes Theroem
     else:
@@ -139,9 +147,12 @@ for t in TEAM_P:
 
 print("\n=== Chance for conditional to be true when finishing 1st ===")
 for t in TEAM_P:
-    print(f"{t}: {first_place_with_conditional[t] / first_place[t]:.2%}")
+    if (first_place[t] != 0):
+        print(f"{t}: {first_place_with_conditional[t] / first_place[t]:.2%}")
+    else:
+        print(f"{t}: {0.0:.2%}")
 
-print("\n=== Chance to finishing 1st with conditional true ===")
+print("\n=== Chance of finishing 1st with conditional true ===")
 for t in TEAM_P:
     print(f"{t}: {winning_with_conditional_probability[t]:.2%}")
 
