@@ -52,16 +52,15 @@ for item in TEAM_P.items():      # TEAM_P.items() returns pairs like ("ATL", 0.4
     # Store it in the PRIORS dictionary under the key = team name
     PRIORS[team] = alpha_beta_tuple
 
-GAMES = 150 #games in a seson
-TRIALS = 3000  # trial count
+GAMES = 150 # Games in a seson
+TRIALS = 3000  # Trial count
 
- 
 TEAM_WINS_CONDITIONAL = 20 #Wins for the given conditional
 STARTING_GAMES_CONDITIONAL = 30 # Number of wins when the conditional is checked
 
 probability_of_conditional = {} #Chances for the conditional to be true
 conditional_met = {} #Keeps track of when a conditional is meet in a trial
-first_place_with_conditional = {} #Chance of winning first place and conditional being true
+first_place_with_conditional = {} # Chance of winning first place and conditional being true
 
 for team in TEAM_P:
     if (TEAM_WINS_CONDITIONAL == 0 and STARTING_GAMES_CONDITIONAL == 0): ## Basecase - Every teams has 0 wins in zero games
@@ -72,11 +71,11 @@ for team in TEAM_P:
         probability_of_conditional[team] = 0.0
     first_place_with_conditional[team] = 0.0
 
-first_place = Counter() #to count first place finishes, it auto-adds a key if the jey doesnt exist yet 
-win_sums = Counter() #same as above, but for wins
-#we use counter here cuz it makes it easy to count things without initializing keys
+first_place = Counter() # To count first place finishes, it auto-adds a key if the key doesnt exist yet 
+win_sums = Counter() # To count wins
+# The counter makes it easy to count things without initializing keys
 
-#found most of this monte carlo sim online and will work on it 
+# Found most of this monte carlo sim online and will work on it 
 for _ in range(TRIALS): #<- use _ to ignore loop var
     wins = {}   # create an empty dictionary to store win totals
 
@@ -89,11 +88,10 @@ for _ in range(TRIALS): #<- use _ to ignore loop var
         alpha_for_team, beta_for_team = PRIORS[t]
         p = random.betavariate(alpha_for_team, beta_for_team)
 
-    # Simulate indpendent games for this team
+        # Simulate indpendent games for this team
+        win_count = 0 # Start this team's win count at 0
 
-        win_count = 0   # start this team's win count at 0
-
-    # Loop through every simulated game
+        # Loop through every simulated game
         for game_index in range(GAMES):
 
         # Generate a random number between 0 and 1
@@ -117,20 +115,20 @@ for _ in range(TRIALS): #<- use _ to ignore loop var
 
     # After finishing all the simulated games, store the win total
         wins[t] = win_count
-    # random tiebreaker for ties at the top
-    top = max(wins.values()) #determine the team with max wins
-    tied = [t for t, w in wins.items() if w == top] #list of teams that are tied for first
-    winningTeam = random.choice(tied) #randomly choose one of the tied teams to get first place credit
+    # Random tiebreaker for ties at the top
+    top = max(wins.values()) # Determine the team with most wins
+    tied = [t for t, w in wins.items() if w == top] # List of teams that are tied for first
+    winningTeam = random.choice(tied) # Randomly choose one of the tied teams to get first place credit
     first_place[winningTeam] += 1 
-    for t, w in wins.items(): #add each teams wins to their total win count
-        win_sums[t] += w #add wins to total
+    for t, w in wins.items(): # Add each teams wins to their total win count
+        win_sums[t] += w # Add wins to total
     if (conditional_met[winningTeam]): 
-        first_place_with_conditional[winningTeam] += 1 #add a points for the wining team if the baye condition was met
+        first_place_with_conditional[winningTeam] += 1 # Add a points for the wining team if the baye condition was met
 
-winning_with_conditional_probability = {} #Dictionary containing the probabilies of a team winning if the conditional property is true
+winning_with_conditional_probability = {} # Dictionary containing the probabilies of a team winning if the conditional property is true
 for t in TEAM_P:
-    if (probability_of_conditional[t] != 0 and first_place[t] != 0): #Prevents a divide by zero
-        bayeChanceWhenWinning = first_place_with_conditional[t] / first_place[t] #Chance the conditional is meet in a winning season
+    if (probability_of_conditional[t] != 0 and first_place[t] != 0): # Prevents a divide by zero
+        bayeChanceWhenWinning = first_place_with_conditional[t] / first_place[t] # Chance the conditional is meet in a winning season
         winning_with_conditional_probability[t] = (first_place[t] * bayeChanceWhenWinning) / (probability_of_conditional[t]) # Bayes Theroem
     else:
         winning_with_conditional_probability[t] = 0.0 
